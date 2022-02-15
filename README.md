@@ -30,3 +30,27 @@ USAGE: qn [OPTION] ... [FILE] ... [TEXTINPUT or SECOND FILE]
  -k Appends line with preceeding timestamp to journal. Creates file if it does not already exist. Requires a string of text in quotes.
  <br/>
  -h Displays help.
+ 
+ <br/>
+ <br/>
+ 
+ Autocompletion
+ 
+ 
+ ```
+ _qn_complete() {
+    local QN_DIR=$HOME/.quicknote
+    local cmd=$1 cur=$2 pre=$3
+    local arr i file
+
+    arr=( $( cd "$QN_DIR" && compgen -f -- "$cur" ) )
+    COMPREPLY=()
+    for ((i = 0; i < ${#arr[@]}; ++i)); do
+        file=${arr[i]}
+        if [[ -d $QN_DIR/$file ]]; then
+            file=$file/
+        fi
+        COMPREPLY[i]=$file
+    done
+}
+complete -F _qn_complete nospace qn ```
