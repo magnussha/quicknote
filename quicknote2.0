@@ -1,0 +1,86 @@
+#!/bin/bash
+QNDIRECTORY="/home/$USER/.quicknote"
+QNARCHIVE="/home/$USER/Documents/QNarchive"
+HELP="USAGE: qn [OPTION] ... [FILE] ... [TEXTINPUT or SECOND FILE]\n
+Small bashscript for notetaking with vim.\n
+Stores files in ~/.quicknote, and archives to ~/Documents/QNarchive\n
+When executed without an option it will list all notes.\n
+If the first parameter is a string that is not an option, it will create a new note with that the as name.\n
+\n
+Options:\n
+   -p 		Prints the note (cat).\n
+   -r		Reads the note (less).\n
+   -d		Deletes the note.\n
+   -g 		Searches through the file for string.\n
+   -a		Appends text to note. Requires two parameters - name of note (first), and a string of text in quotes (second). If note does not exist, it will be created with the quoted text.\n
+   -n		Renames note. Requires two parameters - current name of note (first), new name of note (second).\n
+   -l		Prints path of note. \n
+   -b		Moves note to archive folder. \n
+   -j		Starts a new note with current date as name (Journal). \n
+   -k		Appends line with preceeding timestamp to journal. Creates file if it does not already exist. Requires a string of text in quotes.\n
+   -h		Displays help.\n"
+if [ ! -d $QNDIRECTORY ]; then
+        mkdir $QNDIRECTORY
+fi
+if [[ -z "$*" ]]; then
+        ls -1 $QNDIRECTORY
+else
+while getopts p:r:d:g:a:n:l:b:jk:h option
+do
+	case "${option}"
+	in
+		p) cat $QNDIRECTORY/${OPTARG} 2>/dev/null|| echo "File does not exist.";;
+		r) less $QNDIRECTORY/${OPTARG} 2>/dev/null|| echo "File does not exist.";;
+		d) rm $QNDIRECTORY/${OPTARG} 2>/dev/null && echo "Deleted note ${OPTARG}" || echo "File does not exist.";;
+		g) grep ${OPTARG} $QNDIRECTORY/* | sed 's/.*\.quicknote\///g';;
+		a) if [ "$#" == 3 ]; then
+	                if [ ! -f $QNDIRECTORY/"$2" ]; then
+        	                echo -e "Creating new note $2 with content:\n$3"
+                	fi
+                	echo "$3" >> $QNDIRECTORY/$2
+
+		   else
+			echo "Invalid input"
+		   fi;;
+		   
+                n) if [ "$#" == 3 ]; then
+                        if [ -f $QNDIRECTORY/"$2" ]; then
+                                echo -e "Renaming $2 to $3"
+				mv $QNDIRECTORY/$2 $QNDIRECTORY/$3
+			else
+				echo "File $2 does not exist."
+                        fi  
+
+                   else
+                        echo "Invalid input"
+                   fi;;	
+
+		l) echo $QNDIRECTORY/${OPTARG} 2>/dev/null|| echo "File does not exist.";;	
+		b) if [ ! -d $QNARCHIVE ]; then 
+			mkdir $QNARCHIVE; 
+ 		   fi
+		   movfil=${OPTARG}
+		   if [ -f $QNARCHIVE/${OPTARG} ]; then
+			   echo "Archived file with name ${OPTARG} already exists. Appending date."
+			   mv $QNDIRECTORY/$movfil $QNDIRECTORY/$movfil-$(date +%Y-%m-%d)
+			   movfil=$movfil-$(date +%Y-%m-%d)
+		   fi
+		   mv $QNDIRECTORY/$movfil $QNARCHIVE 2>/dev/null && echo "$movfil moved to archive - $QNARCHIVE"|| echo "File does not exist".;;
+		j) vim -c 'startinsert' $QNDIRECTORY/$(date +%Y-%m-%d);;
+		k) if [ "$#" == 2 ]; then
+			if [ ! -f $QNDIRECTORY/$(date +%Y-%m-%d) ]; then
+				echo -e "Creating new journal note"
+			fi
+			entry="$(date +%H:%M) - $2"
+			echo -e $entry >> $QNDIRECTORY/$(date +%Y-%m-%d)
+			echo -e "Line added to journal\n$entry"
+		   else
+			echo "Invalid input"
+		   fi;;
+		h) echo -e $HELP
+	esac
+done
+if ! [[ "$1" =~ ^- ]]; then
+	vim -c 'startinsert' $QNDIRECTORY/$1
+fi
+fi
