@@ -53,4 +53,5 @@ USAGE: qn [OPTION] ... [FILE] ... [TEXTINPUT or SECOND FILE]
         COMPREPLY[i]=$file
     done
 }
-complete -F _qn_complete nospace qn ```
+complete -F _qn_complete nospace qn 
+```
