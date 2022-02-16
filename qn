@@ -18,7 +18,7 @@ Options:\n
    -b		Moves note to archive folder. \n
    -j		Starts a new note with current date as name (Journal). \n
    -k		Appends line with preceeding timestamp to journal. Creates file if it does not already exist. Requires a string of text in quotes.\n
-   -h		Displays help.\n"
+   -h		Prints this help.\n"
 if [ ! -d $QNDIRECTORY ]; then
         mkdir $QNDIRECTORY
 fi
