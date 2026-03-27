@@ -19,7 +19,7 @@ USAGE: qn [OPTION] ... [FILE] ... [TEXTINPUT or SECOND FILE]
  -b Moves note to archive folder. 
  -j Starts a new note with current date as name (Journal).  
  -k Appends line with preceeding timestamp to journal. Creates file if it does not already exist. Requires a string of text in quotes.
- -u Appends line without preceeding timestamp to journal. Creates file if it does not already exist. Requires a string of text in quotes. \n
+ -u Appends line without preceeding timestamp to journal. Creates file if it does not already exist. Requires a string of text in quotes.
  -h Prints this help.
  ```
  
